@@ -1,10 +1,14 @@
+import { Image } from './../../model/Image.model';
 import { Injectable } from '@angular/core';
 import { Ecrivain } from '../../model/ecrivain.model';
 import { Genre } from "../../model/Genre.model";
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { apiURL, apiURLG } from '../config';
+import { apiURL, apiURLG, apiURLBack } from '../config';
 import { genreWrapper } from '../../model/genreWrapped.model';
+import { AuthService } from './auth.service';
+import { map } from 'rxjs/operators';  // Add this import
+
 
 const httpOptions = {
   headers: new HttpHeaders( {'Content-Type': 'application/json'} ) // -> pour indiquer que les données retournés sont de type json
@@ -15,58 +19,61 @@ const httpOptions = {
 })
 export class EcrivainService {
 
-  // apiURL: string = 'http://localhost:8080/ecrivains/api';
-
   ecrivains : Ecrivain[] = [];
   ecrivain! : Ecrivain;
   genres! : Genre[];
 
-  // constructor() {
-  //   this.genres = [
-  //     {idG : 1, nomG: "Science-fiction", descriptiong: "Ce genre est axé sur des récits futuristes, technologiques ou centrés sur des découvertes scientifiques imaginaires. "},
-  //     {idG : 2, nomG: "Policier ", descriptiong: "Ce genre se concentre sur des histoires de crimes, souvent centrées autour d’enquêtes menées par un détective ou un enquêteur."},
-  //   ]
+  constructor(private http : HttpClient, private authService : AuthService) {}
 
-  //   this.ecrivains = [
-  //     { idEcrivain: 1, nomEcrivain: "Vikki D.", prixLivre: 210.50, dateCreation: new Date("08/14/1802") , genre: {idG : 1, nomG: "Science-fiction", descriptiong: "Ce genre est axé sur des récits futuristes, technologiques ou centrés sur des découvertes scientifiques imaginaires. "} },
-  //     { idEcrivain: 2, nomEcrivain: "Bailey Jr.", prixLivre: 240.75, dateCreation: new Date("02/07/1812"), genre: {idG : 2, nomG: "Policier ", descriptiong: "Ce genre se concentre sur des histoires de crimes, souvent centrées autour d’enquêtes menées par un détective ou un enquêteur."} },
-  //     { idEcrivain: 3, nomEcrivain: "Jamie Br.", prixLivre: 800.40, dateCreation: new Date("12/16/1775"), genre:{idG : 1, nomG: "Science-fiction", descriptiong: "Ce genre est axé sur des récits futuristes, technologiques ou centrés sur des découvertes scientifiques imaginaires. "} }
-  //   ];
-  //  }
-
-  constructor(private http : HttpClient) {}
 
   //----------------------- Ecrivain
 
-  listeEcrivains(): Observable<Ecrivain[]> {
-    return this.http.get<Ecrivain[]>(apiURL);
+  listeEcrivains(): Observable<Ecrivain[]>{
+    // let jwt = this.authService.getToken();
+    // jwt = "Bearer "+jwt;
+    // let httpHeaders = new HttpHeaders({"Authorization":jwt})
+    // return this.http.get<Ecrivain[]>(this.apiURL+"/all",{headers:httpHeaders});
+    return this.http.get<Ecrivain[]>(apiURL+"/all");
   }
-
-  // ajouterEcrivain( ecriv: Ecrivain){
-  //   this.ecrivains.push(ecriv);
+ 
+  // ajouterEcrivain( ecriv: Ecrivain):Observable<Ecrivain>{
+  //   let jwt = this.authService.getToken();
+  //   jwt = "Bearer "+jwt;
+  //   let httpHeaders = new HttpHeaders({"Authorization":jwt})
+  //   return this.http.post<Ecrivain>(apiURL+"/addEcrivain", ecriv, {headers:httpHeaders});
   // }
-  ajouterEcrivain( ecriv: Ecrivain):Observable<Ecrivain>{
-    return this.http.post<Ecrivain>(apiURL, ecriv, httpOptions);
-  }
-
-  // supprimerEcrivain( ecriv: Ecrivain){
-  //   const index = this.ecrivains.indexOf(ecriv, 0);
-  //   if (index > -1) {
-  //     this.ecrivains.splice(index, 1);
-  //   }
-  // }
-  supprimerEcrivain(id : number) {
-    const url = `${apiURL}/${id}`;
-    return this.http.delete(url, httpOptions);
-  }
+  ajouterEcrivain(ecriv: Ecrivain): Observable<Ecrivain> {
+    let jwt = this.authService.getToken();
+    jwt = "Bearer " + jwt;
+    let httpHeaders = new HttpHeaders({"Authorization": jwt});
     
+    // Make sure the complete Ecrivain object with image data is sent
+    return this.http.post<Ecrivain>(apiURL + "/addEcrivain", ecriv, {headers: httpHeaders})
+      .pipe(
+        map(response => {
+          // Ensure the image data is properly set in the response
+          if (response.images && response.images.length > 0) {
+            response.imageStr = `data:${response.images[0].type};base64,${response.images[0].image}`;
+          }
+          return response;
+        })
+      );
+  }
 
-  // consulterEcrivain(id:number): Ecrivain{
-  //   return this.ecrivains.find(e => e.idEcrivain == id)!;
-  // }
+  supprimerEcrivain(id : number) {
+    const url = `${apiURL}/delEcrivain/${id}`;
+    let jwt = this.authService.getToken();
+    jwt = "Bearer "+jwt;
+    let httpHeaders = new HttpHeaders({"Authorization":jwt})
+    return this.http.delete(url, {headers:httpHeaders});
+  }
+ 
   consulterEcrivain(id: number): Observable<Ecrivain> {
-    const url = `${apiURL}/${id}`;
-    return this.http.get<Ecrivain>(url);
+    const url = `${apiURL}/getbyid/${id}`;
+    let jwt = this.authService.getToken();
+    jwt = "Bearer "+jwt;
+    let httpHeaders = new HttpHeaders({"Authorization":jwt})
+    return this.http.get<Ecrivain>(url,{headers:httpHeaders});
   }
 
   trierEcrivains(){
@@ -79,44 +86,65 @@ export class EcrivainService {
     });
   }
 
-  // updateEcrivain(e:Ecrivain)
-  // {
-  //   this.supprimerEcrivain(e);
-  //   this.ajouterEcrivain(e);
-  //   this.trierEcrivains();
-  // }
   updateEcrivain(ecriv :Ecrivain) : Observable<Ecrivain>
   {
-    return this.http.put<Ecrivain>(apiURL, ecriv, httpOptions);
+    let jwt = this.authService.getToken();
+    jwt = "Bearer "+jwt;
+    let httpHeaders = new HttpHeaders({"Authorization":jwt})
+    return this.http.put<Ecrivain>(apiURL+"/updateEcrivain", ecriv, {headers:httpHeaders});
   }
 
   //----------------------- Genre
 
-  // listeGenres():Genre[] {
-  //   return this.genres;
-  // }
+ 
   listeGenres():Observable<genreWrapper>{
-    return this.http.get<genreWrapper>(apiURLG);
+    let jwt = this.authService.getToken();
+    jwt = "Bearer "+jwt;
+    let httpHeaders = new HttpHeaders({"Authorization":jwt})
+    return this.http.get<genreWrapper>(apiURLG,{headers:httpHeaders})
   }
 
-  // consulterGenre(id:number): Genre{
-  //   return this.genres.find(gen => gen.idG == id)!;
-  // }
-
   rechercherParGenre(idG: number):Observable< Ecrivain[]> {
-    const url = `${apiURL}/ecrivsGen/${idG}`;
+    const url = `${apiURL}/ecrivsGen/${idG}`; // //
     return this.http.get<Ecrivain[]>(url);
   }
 
   rechercherParNom(nom: string):Observable< Ecrivain[]> {
-    const url = `${apiURL}/ecrivsByName/${nom}`;
+    const url = `${apiURL}/ecrivsByName/${nom}`; //was apiURLG
     return this.http.get<Ecrivain[]>(url);
   }
 
   ajouterGenre( gen : Genre):Observable<Genre>{
     return this.http.post<Genre>(apiURLG, gen, httpOptions);
   }
+
+  //----------------------------- Image ------------------
+  uploadImage(file: File, filename: string): Observable<Image> {
+    const imageFormData = new FormData();
+    imageFormData.append('image', file, filename);
+    const url = `${apiURL + '/image/upload'}`;
+    return this.http.post<Image>(url, imageFormData);
+  }
+
+  loadImage(id: number): Observable<Image> {
+    const url = `${apiURL + '/image/get/info'}/${id}`;
+    return this.http.get<Image>(url);
+  }
+
+  uploadImageEcriv(file: File, filename: string, idEcriv: number): Observable<any> {
+    const imageFormData = new FormData();
+    imageFormData.append('image', file, filename);
+    const url = `${apiURL + '/image/uplaodImageEcriv'}/${idEcriv}`;
+    return this.http.post(url, imageFormData);
+  }
+
+  supprimerImage(id: number) {
+    const url = `${apiURL}/image/delete/${id}`;
+    return this.http.delete(url, httpOptions);
+  }
     
+    
+
   
 }
 

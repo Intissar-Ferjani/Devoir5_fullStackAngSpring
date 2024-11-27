@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { EcrivainService } from '../services/ecrivain.service';
 import { Ecrivain } from '../../model/ecrivain.model';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-recherche-par-nom',
@@ -14,8 +15,8 @@ export class RechercheParNomComponent implements OnInit {
 
   allEcrivains! : Ecrivain[];
   searchTerm!: string;
-
-  constructor(private ecrivainService : EcrivainService){};
+ 
+  constructor(private ecrivainService : EcrivainService, public authService: AuthService){};
   
   ngOnInit(): void {
     this.ecrivainService.listeEcrivains().subscribe(ecrivs => {

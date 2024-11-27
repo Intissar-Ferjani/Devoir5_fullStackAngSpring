@@ -17,8 +17,8 @@ public class EcrivainDTO {
 
 	private Long idEcrivain;
 	private String nomEcrivain;
-	private Double prixLivre;
-	private Date dateCreation;
+	private Double Honoraires;
+	private Date dateDebutCarriere;
 	private Genre genre;
 	private String nomGen;
 }

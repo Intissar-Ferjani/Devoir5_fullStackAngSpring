@@ -1,19 +1,15 @@
 package com.intissar.demo.security;
 
 import java.util.Arrays;
-
 import java.util.Collections;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -26,10 +22,6 @@ import jakarta.servlet.http.HttpServletRequest;
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled= true)
 public class SecurityConfig {
-	
-	@Autowired
-	KeycloakRoleConverter keycloakRoleConverter;
-	
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -48,19 +40,18 @@ public class SecurityConfig {
                 return cors;
             }
         }))
+//        	 .authorizeHttpRequests().anyRequest().permitAll();
             .authorizeHttpRequests(requests -> requests
                 .requestMatchers("/api/all/**").hasAnyAuthority("ADMIN", "USER")
                 .requestMatchers(HttpMethod.GET, "/api/getbyid/**").hasAnyAuthority("ADMIN", "USER")
-//                .requestMatchers(HttpMethod.POST, "/api/adding/**").hasAuthority("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/updateing/**").hasAuthority("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/deling/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/adding/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/updating/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/deleting/**").hasAuthority("ADMIN")
                 .requestMatchers("/rect/**").hasAnyAuthority("ADMIN", "USER")
                 .requestMatchers("/api/ingcrect/**").hasAnyAuthority("ADMIN", "USER")
                 .anyRequest().authenticated())
-            //.oauth2ResourceServer(rs -> rs.jwt(Customizer.withDefaults()));
-            .oauth2ResourceServer(ors->ors.jwt(jwt->jwt.jwtAuthenticationConverter(keycloakRoleConverter)));
-
             
+            .addFilterBefore(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
   

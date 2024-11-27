@@ -4,15 +4,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.intissar.demo.entities.Ecrivain;
 import com.intissar.demo.service.EcrivainService;
 
@@ -39,7 +36,7 @@ public class EcrivainRESTController {
 //    @RequestMapping(path = "/addEcrivain",method = RequestMethod.POST)
 //    @PreAuthorize("hasAuthority('ADMIN')")
     @RequestMapping(value = "/addEcrivain", method = RequestMethod.POST)
-	@PreAuthorize("hasAuthority('ADMIN')")
+	//@PreAuthorize("hasAuthority('ADMIN')")
     public Ecrivain createEcrivain(@RequestBody Ecrivain ecrivain) {
     return ecrivainService.saveEcrivain(ecrivain); 
     }
@@ -64,11 +61,6 @@ public class EcrivainRESTController {
     public List<Ecrivain> findByNomEcrivainContains(@PathVariable("nom") String nom) {
     	return ecrivainService.findByNomEcrivainContains(nom);  
     }
-    
-    @GetMapping("/auth")
-    Authentication getAuth(Authentication auth)
-    {
-    	return auth;
-    }
+
 
 }

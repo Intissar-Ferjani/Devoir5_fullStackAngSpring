@@ -13,12 +13,16 @@ import org.springframework.stereotype.Service;
 import com.intissar.demo.entities.Ecrivain;
 import com.intissar.demo.entities.Genre;
 import com.intissar.demo.repos.EcrivainRepository;
+import com.intissar.demo.repos.ImageRepository;
 
 @Service
 public class EcrivainServiceImpl implements EcrivainService { 
 	
 	@Autowired
 	EcrivainRepository ecrivainRepository;
+	
+	@Autowired
+	ImageRepository imageRepository;
 	
 //	@Autowired
 //	ModelMapper modelMapper;
@@ -28,12 +32,22 @@ public class EcrivainServiceImpl implements EcrivainService {
 		return ecrivainRepository.save(e);
 	}
 
+//	@Override
+//	public Ecrivain updateEcrivain(Ecrivain e) {
+//		 if (!ecrivainRepository.existsById(e.getIdEcrivain())) 
+//	        throw new ResourceNotFoundException("Ingredient not found with id " + e.getIdEcrivain());
+//	        
+//	     return ecrivainRepository.save(e);
+//	}
 	@Override
 	public Ecrivain updateEcrivain(Ecrivain e) {
-		 if (!ecrivainRepository.existsById(e.getIdEcrivain())) 
-	        throw new ResourceNotFoundException("Ingredient not found with id " + e.getIdEcrivain());
-	        
-	     return ecrivainRepository.save(e);
+//		Long oldEcrivImageId =
+//				this.getEcrivain(e.getIdEcrivain()).getImage().getIdImage();
+//		Long newEcrivImageId = e.getImage().getIdImage();
+		Ecrivain ecrivUpdated = ecrivainRepository.save(e);
+//		if (oldEcrivImageId != newEcrivImageId) //si l'image a été modifiée
+//			imageRepository.deleteById(oldEcrivImageId);
+		return ecrivUpdated;
 	}
 
 	@Override
@@ -68,8 +82,8 @@ public class EcrivainServiceImpl implements EcrivainService {
 	}
 	
 	@Override
-	public List<Ecrivain> findByNomPrix(String nom, Double prix) {
-		return ecrivainRepository.findByNomPrix(nom, prix);
+	public List<Ecrivain> findByNomHonoraires(String nom, Double honoraires) {
+		return ecrivainRepository.findByNomHonoraires(nom, honoraires);
 	}
 	
 	@Override
@@ -88,10 +102,9 @@ public class EcrivainServiceImpl implements EcrivainService {
 	}
 	
 	@Override
-	public List<Ecrivain> trierEcrivainsNomsPrix() {
-		return ecrivainRepository.trierEcrivainsNomsPrix();
+	public List<Ecrivain> trierEcrivainsNomsHonoraires() {
+		return ecrivainRepository.trierEcrivainsNomsHonoraires();
 	}
-
 
 
 }
