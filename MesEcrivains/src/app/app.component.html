@@ -1,0 +1,36 @@
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+    <!-- Brand -->
+    <a class="navbar-brand m-3" href="#">Gestion Ecrivains</a>
+
+    <!-- Links -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" routerLink="/ecrivains">Home</a>
+        </li>
+        <!-- Dropdown for Ecrivains -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbardropEcrivains" data-bs-toggle="dropdown" aria-expanded="false">Ecrivains</a>
+            <ul class="dropdown-menu" aria-labelledby="navbardropEcrivains">
+                <li><a class="dropdown-item" routerLink="/add-ecrivain" *ngIf="authService.isAdmin()">Ajouter</a></li>
+                <li><a class="dropdown-item" routerLink="/ecrivains">Lister</a></li>
+                <li><a class="dropdown-item" routerLink="/rechercheParGenre">Recherche Par Genre</a></li>
+                <li><a class="dropdown-item" routerLink="/rechercheParNom">Recherche Par Nom</a></li>
+                <li><a class="dropdown-item" routerLink="/listeGenres">Gestion des Genres</a></li>
+            </ul>
+        </li>
+    </ul>
+
+    <!-- user menu -->
+    <ul class="navbar-nav ms-auto" style="margin-right: 100px;">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbardropUser" data-bs-toggle="dropdown">{{authService.loggedUser}} </a>
+            <ul class="dropdown-menu" aria-labelledby="navbardropUser">
+                <li><a class="dropdown-item" *ngIf="!authService.isloggedIn" routerLink = "login">Login</a></li>
+                <li><a class="dropdown-item" style="cursor: pointer;" *ngIf="authService.isloggedIn" (click)="onLogout()">Logout</a></li>
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+
+<router-outlet></router-outlet>

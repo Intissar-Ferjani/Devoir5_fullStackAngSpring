@@ -1,0 +1,36 @@
+<div class="container">
+    <div class="mt-4">
+        <h2>Ajouter un Ecrivain :</h2>
+    </div>
+    <br>
+    <form >
+        <div class="col-sm-2 col-md-2 col-lg-2" hidden>
+            <label >ID Ecrivain</label>
+            <input type="text" [(ngModel)]="newEcrivain.idEcrivain" name="idProduit" class="form-control">
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-4" >
+            <label >Nom Ecrivain</label>
+            <input type="text"[(ngModel)]= "newEcrivain.nomEcrivain" name="nomProduit" class="form-control"><br>
+        </div>
+        <div class="col-sm-2 col-md-2 col-lg-2">
+            <label >Prix Livre</label>
+            <input type="number" [(ngModel)]= "newEcrivain.prixLivre" name="prixProduit" class="form-control"><br>
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-4">
+            <label >Date création</label>
+            <input type="date" [(ngModel)]= "newEcrivain.dateCreation" name="dateCreation" class="form-control"><br>
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-4">
+            <label>Genre</label>
+            <select class="form-control" id="idG" name="idG" [(ngModel)]="newIdG">
+                <option *ngFor="let g of genres" [value]="g.idG" >{{g.nomG}}</option>
+            </select><br>
+        </div>
+        <div class="mt-2">
+            <button type="submit" (click)="addEcrivain()"class="btn btn-success">Ajouter</button>
+        </div>
+        <!-- <div>
+            <h4>{{msg}}</h4>
+        </div> -->
+    </form>
+</div>
