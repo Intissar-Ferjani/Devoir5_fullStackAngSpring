@@ -13,23 +13,22 @@ import com.intissar.demo.entities.Genre;
 import com.intissar.demo.repos.GenreRepository;
 
 @RestController
-@RequestMapping("/api/gen")
+@RequestMapping("/api")
 @CrossOrigin("*")
 public class GenreRESTController {
 
-	@Autowired
-	GenreRepository genreRepository;
-	
-	@RequestMapping(method=RequestMethod.GET)
-	public List<Genre> getAllGenres()
-	{
-		return genreRepository.findAll();
-	}
-	
-	@RequestMapping(value="/{id}",method = RequestMethod.GET)
-	public Genre getCategorieById(@PathVariable("id") Long id) {
-		return genreRepository.findById(id).get();
-	}
+	 @Autowired
+	    GenreRepository genreRepository;
+
+	    @RequestMapping(path = "/gen", method = RequestMethod.GET)
+	    public List<Genre> getAllGenres() {
+	        return genreRepository.findAll();
+	    }
+
+	    @RequestMapping(value = "/gen/{id}", method = RequestMethod.GET)
+	    public Genre getGenreById(@PathVariable("id") Long id) {
+	        return genreRepository.findById(id).get();
+	    }
 	
 
 }

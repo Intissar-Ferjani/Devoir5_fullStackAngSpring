@@ -16,25 +16,22 @@ import com.intissar.demo.service.UserService;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
-	
-	@Autowired
-	UserService userService;
 
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		
-		User user = userService.findUserByUsername(username);
-		if (user==null) 
-			 throw new UsernameNotFoundException("Utilisateur introuvable !");
-		
-		
-		List<GrantedAuthority> auths = new ArrayList<>();
-		
-		user.getRoles().forEach(role -> {
-			GrantedAuthority auhority = new SimpleGrantedAuthority(role.getRole());
-			auths.add(auhority);
-		});
+    @Autowired
+    UserService userService;
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userService.findUserByUsername(username);
+        if(user == null)
+            throw new UsernameNotFoundException("User not found");  
 
-		return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(),user.getEnabled(),true,true,true,auths);
-	}
+        List<GrantedAuthority> auths = new ArrayList<>();
+        user.getRoles().forEach(role -> {
+            GrantedAuthority authority = new SimpleGrantedAuthority(role.getRole());
+            auths.add(authority);
+        });
+        return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(),user.getEnabled(),true,true
+        ,true,auths);
+    }
+    
 }

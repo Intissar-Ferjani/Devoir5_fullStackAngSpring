@@ -21,17 +21,39 @@ export class EcrivainsComponent implements OnInit {
     this.chargerEcrivains();
   }
 
-  chargerEcrivains() {
-    this.ecrivainService.listeEcrivains().subscribe(data => {
-      this.ecrivains = data.map(ecrivain => {
-        if (ecrivain.images && ecrivain.images.length > 0) {
-          ecrivain.imageStr = `data:${ecrivain.images[0].type};base64,${ecrivain.images[0].image}`;
-        }
-        return ecrivain;
-      });
-    });
+  // chargerEcrivains() {
+  //   this.ecrivainService.listeEcrivains().subscribe(data => {
+  //     this.ecrivains = data.map(ecrivain => {
+  //       if (ecrivain.images && ecrivain.images.length > 0) {
+  //         ecrivain.imageStr = `data:${ecrivain.images[0].type};base64,${ecrivain.images[0].image}`;
+  //       }
+  //       return ecrivain;
+  //     });
+  //   });
     
+  // }
+
+  chargerEcrivains() {
+    this.ecrivainService.listeEcrivains().subscribe({
+      next: (ecrivs) => {
+        console.log(ecrivs);
+        this.ecrivains = ecrivs;
+
+        this.ecrivains.forEach((ecriv) => {
+          if (ecriv.images && ecriv.images.length > 0) {
+            // Use the first image as the display image
+            ecriv.imageStr =
+              'data:' + ecriv.images[0].type + ';base64,' + ecriv.images[0].image;
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Error loading eleves:', error);
+        // You might want to show an error message to the user here
+      },
+    });
   }
+  
   
   supprimerEcrivain(e: Ecrivain)
   {

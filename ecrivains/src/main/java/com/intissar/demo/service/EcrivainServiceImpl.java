@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.intissar.demo.entities.Ecrivain;
@@ -19,67 +20,53 @@ import com.intissar.demo.repos.ImageRepository;
 public class EcrivainServiceImpl implements EcrivainService { 
 	
 	@Autowired
-	EcrivainRepository ecrivainRepository;
+    EcrivainRepository ecrivainRepository;
+    @Autowired
+    ImageRepository imageRepository;
 	
-	@Autowired
-	ImageRepository imageRepository;
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Override
+    public Ecrivain saveEcrivain(Ecrivain e) {
+        return ecrivainRepository.save(e);
+    }
+
+
+    @Override
+    public Ecrivain updateEcrivain(Ecrivain e) {
+    	Ecrivain ecrivUpdated = ecrivainRepository.save(e);
+        return ecrivUpdated;
+    }
+
+    @Override
+    public void deleteEcrivain(Ecrivain e) {
+    	ecrivainRepository.delete(e);
+    }
+
+    @Override
+    public void deleteEcrivainById(Long id) {
+    	ecrivainRepository.deleteById(id);
+    }
+
+    @Override
+    public Ecrivain getEcrivain(Long id) {
+        return ecrivainRepository.findById(id).get();
+    }
+
+    @Override
+    public List<Ecrivain> getAllEcrivains() {
+        return ecrivainRepository.findAll();
+    }
 	
-//	@Autowired
-//	ModelMapper modelMapper;
+    @Override
+    public List<Ecrivain> findByNomEcrivain(String nom) {
+        return ecrivainRepository.findByNomEcrivain(nom);
+    }
 
-	@Override
-	public Ecrivain saveEcrivain(Ecrivain e) {
-		return ecrivainRepository.save(e);
-	}
-
-//	@Override
-//	public Ecrivain updateEcrivain(Ecrivain e) {
-//		 if (!ecrivainRepository.existsById(e.getIdEcrivain())) 
-//	        throw new ResourceNotFoundException("Ingredient not found with id " + e.getIdEcrivain());
-//	        
-//	     return ecrivainRepository.save(e);
-//	}
-	@Override
-	public Ecrivain updateEcrivain(Ecrivain e) {
-//		Long oldEcrivImageId =
-//				this.getEcrivain(e.getIdEcrivain()).getImage().getIdImage();
-//		Long newEcrivImageId = e.getImage().getIdImage();
-		Ecrivain ecrivUpdated = ecrivainRepository.save(e);
-//		if (oldEcrivImageId != newEcrivImageId) //si l'image a été modifiée
-//			imageRepository.deleteById(oldEcrivImageId);
-		return ecrivUpdated;
-	}
-
-	@Override
-	public void deleteEcrivain(Ecrivain e) {
-		ecrivainRepository.delete(e);	
-	}
-
-	@Override
-	public void deleteEcrivainById(Long id) {
-		ecrivainRepository.deleteById(id);
-		
-	}
-
-	@Override
-	public Ecrivain getEcrivain(Long id) {
-		return ecrivainRepository.findById(id).orElse(null);
-	}
-
-	@Override
-	public List<Ecrivain> getAllEcrivains() {
-		 return ecrivainRepository.findAll();
-	}
-	
-	@Override
-	public List<Ecrivain> findByNomEcrivain(String nom) {
-		return ecrivainRepository.findByNomEcrivain(nom);
-	}
-	
-	@Override
-	public List<Ecrivain> findByNomEcrivainContains(String nom) {
-		return ecrivainRepository.findByNomEcrivainContains(nom);
-	}
+    @Override
+    public List<Ecrivain> findByNomEcrivainContains(String nom) {
+        return ecrivainRepository.findByNomEcrivainContains(nom);
+    }
 	
 	@Override
 	public List<Ecrivain> findByNomHonoraires(String nom, Double honoraires) {

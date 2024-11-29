@@ -2,7 +2,6 @@ package com.intissar.demo.service;
 
 import java.util.List;
 
-import com.intissar.demo.dto.EcrivainDTO;
 import com.intissar.demo.entities.Ecrivain;
 import com.intissar.demo.entities.Genre;
 

@@ -1,11 +1,9 @@
 package com.intissar.demo;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 
 import com.intissar.demo.entities.Ecrivain;
@@ -26,10 +24,5 @@ public class EcrivainsApplication  implements CommandLineRunner {
 		repositoryRestConfiguration.exposeIdsFor(Ecrivain.class, Genre.class);
 	}
 	
-	@Bean
-	public ModelMapper modelMapper()
-	{
-		return new ModelMapper();
-	}
 
 }

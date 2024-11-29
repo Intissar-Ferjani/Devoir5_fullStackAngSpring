@@ -41,9 +41,6 @@ public class Ecrivain {
 		this.imagePath = imagePath;
 	}
 
-	
-	 
-
 	public Genre getGenre() {
 		return genre;
 	}

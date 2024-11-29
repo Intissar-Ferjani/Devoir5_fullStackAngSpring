@@ -15,52 +15,46 @@ import com.intissar.demo.service.EcrivainService;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin
+@CrossOrigin("*")
 public class EcrivainRESTController {
 
     @Autowired
     EcrivainService ecrivainService;
 
-//    @RequestMapping(method = RequestMethod.GET) 
-//    @RequestMapping(path="all",method =RequestMethod.GET)
-    @RequestMapping(path = "all", method = RequestMethod.GET)
-    public List<Ecrivain> getAllEcrivains() {
-        return ecrivainService.getAllEcrivains();
-    }
+    @RequestMapping(path="/all",method = RequestMethod.GET)
+	public List<Ecrivain> getAllEcrivains() {
+		return ecrivainService.getAllEcrivains();
+	}
 
     @RequestMapping(value = "/getbyid/{id}", method = RequestMethod.GET)
-    public Ecrivain getEcrivainById(@PathVariable("id") Long id) {
-        return ecrivainService.getEcrivain(id);
-    }
+	public Ecrivain getEcrivainById(@PathVariable("id") Long id) {
+		return ecrivainService.getEcrivain(id);
+	}
     
-//    @RequestMapping(path = "/addEcrivain",method = RequestMethod.POST)
-//    @PreAuthorize("hasAuthority('ADMIN')")
     @RequestMapping(value = "/addEcrivain", method = RequestMethod.POST)
-	//@PreAuthorize("hasAuthority('ADMIN')")
-    public Ecrivain createEcrivain(@RequestBody Ecrivain ecrivain) {
-    return ecrivainService.saveEcrivain(ecrivain); 
-    }
+	public Ecrivain createEcrivain(@RequestBody Ecrivain e) {
+		return ecrivainService.saveEcrivain(e);
+	}
     
-    @RequestMapping(path = "/updateEcrivain",method = RequestMethod.PUT)
-    public Ecrivain updateE(@RequestBody Ecrivain ecrivain) {
-    return ecrivainService.updateEcrivain(ecrivain); 
-    }
+    @RequestMapping(value = "/updateEcrivain", method = RequestMethod.PUT)
+	public Ecrivain updateEcrivain(@RequestBody Ecrivain e) {
+		return ecrivainService.updateEcrivain(e);
+	}
     
-    @RequestMapping(value="/delEcrivain/{id}",method = RequestMethod.DELETE)
-    public void deleteEcrivain(@PathVariable("id") Long id)
-    {
-    	ecrivainService.deleteEcrivainById(id);
-    }
+    @RequestMapping(value = "/delEcrivain/{id}", method = RequestMethod.DELETE)
+	public void deleteEcrivain(@PathVariable("id") Long id) {
+		ecrivainService.deleteEcrivainById(id);
+	}
     
-    @RequestMapping(value="/ecrivsGen/{idG}",method = RequestMethod.GET)
-    public List<Ecrivain> getEcrivainsByGenId(@PathVariable("idG") Long idG) {
-    	return ecrivainService.findByGenreIdG(idG);
-    }
+    @RequestMapping(value = "/ecrivsGen/{idG}", method = RequestMethod.GET)
+	public List<Ecrivain> getEcrivainsByGenId(@PathVariable("idG") Long id) {
+		return ecrivainService.findByGenreIdG(id);
+	}
     
-    @RequestMapping(value="/ecrivsByName/{nom}",method = RequestMethod.GET)
-    public List<Ecrivain> findByNomEcrivainContains(@PathVariable("nom") String nom) {
-    	return ecrivainService.findByNomEcrivainContains(nom);  
-    }
+    @RequestMapping(value = "/ecrivsByName/{nom}", method = RequestMethod.GET)
+	public List<Ecrivain> findByNomEcrivainContains(@PathVariable("nom") String nom) {
+		return ecrivainService.findByNomEcrivainContains(nom);
+	}
 
 
 }

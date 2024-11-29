@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import com.intissar.demo.entities.Genre;
 
 @RepositoryRestResource(path = "gen")
-@CrossOrigin("http://localhost:4200/") //pour autoriser angular
+@CrossOrigin("*")
 public interface GenreRepository extends JpaRepository<Genre, Long>{
 
 }

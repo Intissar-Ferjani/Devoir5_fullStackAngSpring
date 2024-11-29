@@ -1,6 +1,7 @@
 package com.intissar.demo.security;
 
 import java.util.Arrays;
+
 import java.util.Collections;
 
 import org.springframework.context.annotation.Bean;
@@ -14,50 +15,65 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled= true)
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .csrf( csrf -> csrf.disable()) 
-        .cors(cors -> cors.configurationSource(new CorsConfigurationSource() {
-            @Override
-            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                CorsConfiguration cors = new CorsConfiguration();
-                cors.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
-                cors.setAllowedMethods(Collections.singletonList("*"));
-                cors.setAllowedHeaders(Collections.singletonList("*"));
-                cors.setExposedHeaders(Collections.singletonList("Authorization"));
-                
-                return cors;
-            }
-        }))
-//        	 .authorizeHttpRequests().anyRequest().permitAll();
-            .authorizeHttpRequests(requests -> requests
-                .requestMatchers("/api/all/**").hasAnyAuthority("ADMIN", "USER")
-                .requestMatchers(HttpMethod.GET, "/api/getbyid/**").hasAnyAuthority("ADMIN", "USER")
-                .requestMatchers(HttpMethod.POST, "/api/adding/**").hasAuthority("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/updating/**").hasAuthority("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/deleting/**").hasAuthority("ADMIN")
-                .requestMatchers("/rect/**").hasAnyAuthority("ADMIN", "USER")
-                .requestMatchers("/api/ingcrect/**").hasAnyAuthority("ADMIN", "USER")
-                .anyRequest().authenticated())
-            
-            .addFilterBefore(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+		.csrf(csrf -> csrf.disable())
+		.cors(cors -> cors.configurationSource(new CorsConfigurationSource() {
+			@Override
+			public CorsConfiguration getCorsConfiguration(
+					@SuppressWarnings("null") HttpServletRequest request) {
+				CorsConfiguration cors = new CorsConfiguration();
+				cors.setAllowedOrigins(
+						Collections.singletonList("http://localhost:4200"));
+				cors.setAllowedMethods(Collections.singletonList("*"));
+				cors.setAllowedHeaders(Collections.singletonList("*"));
+				cors.setExposedHeaders(Collections.singletonList("Authorization"));
+				return cors;
+			}
+		}))
+		.authorizeHttpRequests(requests -> requests
+				// Albums endpoints
+				.requestMatchers(HttpMethod.GET, "/api/all/**")
+				.hasAnyAuthority("ADMIN", "USER")
+				.requestMatchers(HttpMethod.GET, "/api/getbyid/**")
+				.hasAnyAuthority("ADMIN", "USER")
+				.requestMatchers(HttpMethod.PUT, "/api/updateEcrivain/**")
+				.hasAuthority("ADMIN")
+				.requestMatchers(HttpMethod.DELETE, "/api/delEcrivain/**")
+				.hasAuthority("ADMIN")
 
-        return http.build();
-  
-    }
+				// Images endpoints
+				.requestMatchers(HttpMethod.POST, "/api/image/uplaodImageEcriv/**")
+				.hasAnyAuthority("ADMIN", "USER")
+				.requestMatchers(HttpMethod.POST, "/api/image/upload")
+				.hasAuthority("ADMIN")
+				.requestMatchers(HttpMethod.GET, "/api/image/getImagesEcriv/**")
+				.hasAnyAuthority("ADMIN", "USER")
+				.requestMatchers(HttpMethod.GET, "/api/image/get/info/**")
+				.hasAnyAuthority("ADMIN", "USER")
+				.requestMatchers(HttpMethod.GET, "/api/image/load/**")
+				.hasAnyAuthority("ADMIN", "USER")
+				.requestMatchers(HttpMethod.DELETE, "/api/image/delete/**")
+				.hasAuthority("ADMIN")
+				.requestMatchers(HttpMethod.PUT, "/api/image/update")
+				.hasAuthority("ADMIN")
+
+				// Other requests
+				.anyRequest().authenticated())
+		.addFilterBefore(new JWTAuthorizationFilter(),
+				UsernamePasswordAuthenticationFilter.class);
+		return http.build();
+	}
 }
 
 
 
-	
